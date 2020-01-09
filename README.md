@@ -23,6 +23,7 @@ Given a `bluesky.RunEngine` instance `RE`,
 ```py
 # Set up a logger to display the results.
 import logging
+logger = logging.getLogger('validator')
 log_handler = logging.StreamHandler()  # stderr
 logger.setLevel('INFO')
 logger.addHandler(log_handler)
@@ -43,6 +44,7 @@ If you are running the consumer service, feed it like so:
 ```py
 # Set up a logger to display the results.
 import logging
+logger = logging.getLogger('validator')
 log_handler = logging.StreamHandler()  # stderr
 logger.setLevel('INFO')
 logger.addHandler(log_handler)
@@ -65,6 +67,7 @@ for name, doc in run.canonical(fill='no'):
 ```py
 # Set up a logger to display the results.
 import logging
+logger = logging.getLogger('validator')
 log_handler = logging.StreamHandler()  # stderr
 logger.setLevel('INFO')
 logger.addHandler(log_handler)
