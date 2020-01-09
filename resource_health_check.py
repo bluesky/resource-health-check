@@ -86,8 +86,8 @@ def main():
         'proxy_address', type=str,
         help="bluesky-0MQ-proxy out address, given as in localhost:5578")
     parser.add_argument(
-        '--emails', type=str, required=False,
-        help="comma-separated list of email adddresses")
+        '--emails', required=False, nargs='?',
+        help="space-separated list of email adddresses")
     args = parser.parse_args()
 
     log_handler = logging.StreamHandler()  # stderr
@@ -105,8 +105,8 @@ def main():
     # smtp_handler.setLevel('WARNING')
     # logger.addHandler(smtp_handler)
 
-    for email_address in args.emails.split(','):
-        mail_handler = LinuxMailHandler(email=email_address.strip())
+    for email_address in args.emails.split:
+        mail_handler = LinuxMailHandler(email=email_address)
         mail_handler.setFormatter(LogFormatter())
         mail_handler.setLevel('WARNING')
         logger.addHandler(mail_handler)
