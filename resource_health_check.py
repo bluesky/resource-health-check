@@ -54,7 +54,7 @@ class Validator(DocumentRouter):
             validate_resource(res)
 
 
-def factory(name, doc):
+def validator_factory(name, doc):
     "A factory for the RunRouter that just makes a Validator for each Run."
     validator = Validator()
     validator(name, doc)
@@ -77,9 +77,6 @@ class LinuxMailHandler(logging.Handler):
             f'"Error report from resource health check on '
             f'{socket.gethostname()}" '
             f'"{self.email}"', shell=True)
-
-
-rr = RunRouter([factory])
 
 
 def main():
@@ -114,6 +111,7 @@ def main():
         mail_handler.setLevel('WARNING')
         logger.addHandler(mail_handler)
 
+    rr = RunRouter([validator_factory])
     rd = RemoteDispatcher(args.proxy_address)
     rd.subscribe(rr)
 
