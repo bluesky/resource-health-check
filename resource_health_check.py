@@ -105,7 +105,7 @@ def main():
     # smtp_handler.setLevel('WARNING')
     # logger.addHandler(smtp_handler)
 
-    for email_address in args.emails.split:
+    for email_address in args.emails:
         mail_handler = LinuxMailHandler(email=email_address)
         mail_handler.setFormatter(LogFormatter())
         mail_handler.setLevel('WARNING')
