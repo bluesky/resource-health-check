@@ -86,7 +86,7 @@ def main():
         'proxy_address', type=str,
         help="bluesky-0MQ-proxy out address, given as in localhost:5578")
     parser.add_argument(
-        '--emails', required=False, nargs='?',
+        '--emails', required=False, nargs='*',
         help="space-separated list of email adddresses")
     args = parser.parse_args()
 
