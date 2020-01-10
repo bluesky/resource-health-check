@@ -93,7 +93,7 @@ class LinuxMailHandler(logging.Handler):
             f'echo "{msg}" | mail -s '
             f'"Error report from resource health check on '
             f'{socket.gethostname()}" '
-            f'"{self.email}"', shell=True)
+            f'"{self.email}" &', shell=True)
 
 
 def main():
