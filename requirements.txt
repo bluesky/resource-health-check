@@ -2,3 +2,4 @@ area-detector-handlers
 bluesky
 event-model
 databroker>=1.0.0b4
+pyzmq
