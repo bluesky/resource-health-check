@@ -13,7 +13,7 @@ This logs succcess and failure to the stderr. If emails are provided (optional)
 each failure will cause an email to be sent.
 
 ```sh
-./resource-health-check.py localhost:5578 --emails alice@example.com,bob@example.com
+./resource-health-check.py localhost:5578 --emails alice@example.com bob@example.com
 ```
 
 ### In-process with the bluesky RunEngine
