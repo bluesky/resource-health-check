@@ -4,6 +4,7 @@ import logging
 import socket
 import subprocess
 from collections import deque
+from logging.handlers import SMTPHandler
 
 from bluesky.log import LogFormatter
 from bluesky.callbacks.zmq import RemoteDispatcher
@@ -112,21 +113,25 @@ def main():
     logger.setLevel('INFO')
     logger.addHandler(log_handler)
 
-    # TODO Figure out how to use SMTPHandler.
-    # server_name = socket.getfqdn()
-    # smtp_handler = SMTPHandler(
-    #     f'{server_name}',
-    #     f'Validator <{getpass.getuser()}@{server_name}>',
-    #     'mrakitin@bnl.gov', f'Health check from {server_name}')
-    # smtp_handler.setFormatter(LogFormatter())
-    # smtp_handler.setLevel('WARNING')
-    # logger.addHandler(smtp_handler)
-
     for email_address in (args.emails or []):
-        mail_handler = LinuxMailHandler(email=email_address)
-        mail_handler.setFormatter(LogFormatter())
-        mail_handler.setLevel('WARNING')
-        logger.addHandler(mail_handler)
+        # server_name = socket.getfqdn()
+        server_name = socket.gethostname()
+        smtp_handler = SMTPHandler(
+            mailhost='localhost',
+            fromaddr=f'Resource Health Check <noreply@{server_name}>',
+            toaddrs=email_address,
+            subject=(f'Error report from resource health check on '
+                     f'{server_name}')
+        )
+        smtp_handler.setFormatter(LogFormatter(color=False))
+        smtp_handler.setLevel('WARNING')
+        logger.addHandler(smtp_handler)
+
+    # for email_address in (args.emails or []):
+    #     mail_handler = LinuxMailHandler(email=email_address)
+    #     mail_handler.setFormatter(LogFormatter(color=False))
+    #     mail_handler.setLevel('WARNING')
+    #     logger.addHandler(mail_handler)
 
     rr = RunRouter([validator_factory])
     rd = RemoteDispatcher(args.proxy_address)
