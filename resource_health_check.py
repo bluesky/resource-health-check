@@ -31,8 +31,10 @@ def validate_resource(resource):
             filler.get_handler(resource)
         except UndefinedAssetSpecification:
             logger.error(f'No spec {resource["spec"]} found')
+            raise
         except Exception:
             logger.exception(f'Cannot read the data for {resource}')
+            raise
         else:
             logger.info(f'Successfully read {resource}')
 
@@ -41,9 +43,10 @@ class Validator(DocumentRouter):
     """
     Cache Resource documents. When RunStop is received, validate them.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, raise_errors=False, **kwargs):
         super().__init__(*args, **kwargs)
         self._resources = deque()
+        self.raise_errors = raise_errors
 
     def resource(self, doc):
         self._resources.append(doc)
@@ -51,12 +54,26 @@ class Validator(DocumentRouter):
     def stop(self, doc):
         # TODO Implement retry with backoff, as Filler does.
         for res in self._resources:
-            validate_resource(res)
+            try:
+                validate_resource(res)
+            except Exception:
+                if self.raise_errors:
+                    raise
 
 
 def validator_factory(name, doc):
     "A factory for the RunRouter that just makes a Validator for each Run."
     validator = Validator()
+    validator(name, doc)
+    return [validator], []
+
+
+def validator_factory_raising(name, doc):
+    """A factory for the RunRouter that just makes a Validator for each Run.
+
+       This factory will be raising errors in case of a broken resource.
+    """
+    validator = Validator(raise_errors=True)
     validator(name, doc)
     return [validator], []
 
