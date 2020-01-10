@@ -104,7 +104,7 @@ def main():
         help="bluesky-0MQ-proxy out address, given as in localhost:5578")
     parser.add_argument(
         '--emails', required=False, nargs='*',
-        help="space-separated list of email adddresses")
+        help="space-separated list of email addresses")
     args = parser.parse_args()
 
     log_handler = logging.StreamHandler()  # stderr
