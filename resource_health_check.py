@@ -26,15 +26,15 @@ def validate_resource(resource):
         # again. Note that this mutates a global variable.
         handler_registry.update(discover_handlers())
 
-    filler = Filler(handler_registry, inplace=False)
-    try:
-        filler.get_handler(resource)
-    except UndefinedAssetSpecification:
-        logger.error(f'No spec {resource["spec"]} found')
-    except Exception:
-        logger.exception(f'Cannot read the data for {resource}')
-    else:
-        logger.info(f'Successfully read {resource}')
+    with Filler(handler_registry, inplace=False) as filler:
+        try:
+            filler.get_handler(resource)
+        except UndefinedAssetSpecification:
+            logger.error(f'No spec {resource["spec"]} found')
+        except Exception:
+            logger.exception(f'Cannot read the data for {resource}')
+        else:
+            logger.info(f'Successfully read {resource}')
 
 
 class Validator(DocumentRouter):
