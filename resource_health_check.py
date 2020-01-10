@@ -114,7 +114,6 @@ def main():
     logger.addHandler(log_handler)
 
     for email_address in (args.emails or []):
-        # server_name = socket.getfqdn()
         server_name = socket.gethostname()
         smtp_handler = SMTPHandler(
             mailhost='localhost',
