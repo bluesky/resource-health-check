@@ -4,7 +4,8 @@ import logging
 import socket
 import subprocess
 from collections import deque
-from logging.handlers import SMTPHandler
+from logging.handlers import SMTPHandler, QueueHandler, QueueListener
+import queue
 
 from bluesky.log import LogFormatter
 from bluesky.callbacks.zmq import RemoteDispatcher
@@ -113,24 +114,29 @@ def main():
     logger.setLevel('INFO')
     logger.addHandler(log_handler)
 
-    for email_address in (args.emails or []):
+    if args.emails:
         server_name = socket.gethostname()
         smtp_handler = SMTPHandler(
             mailhost='localhost',
             fromaddr=f'Resource Health Check <noreply@{server_name}>',
-            toaddrs=email_address,
+            toaddrs=args.emails,
             subject=(f'Error report from resource health check on '
                      f'{server_name}')
         )
         smtp_handler.setFormatter(LogFormatter(color=False))
         smtp_handler.setLevel('WARNING')
-        logger.addHandler(smtp_handler)
+        # Use QueueHandler in case sending email is slow. LogRecords flow
+        # from QueueHandler -> Queue -> QueueListener -> SMTPHandler.
+        cleanup_listener = True
+        que = queue.Queue()
+        queue_handler = QueueHandler(que)
+        queue_listener = QueueListener(que, smtp_handler,
+                                       respect_handler_level=True)
+        logger.addHandler(queue_handler)
+        queue_listener.start()
+    else:
+        cleanup_listener = False
 
-    # for email_address in (args.emails or []):
-    #     mail_handler = LinuxMailHandler(email=email_address)
-    #     mail_handler.setFormatter(LogFormatter(color=False))
-    #     mail_handler.setLevel('WARNING')
-    #     logger.addHandler(mail_handler)
 
     rr = RunRouter([validator_factory])
     rd = RemoteDispatcher(args.proxy_address)
@@ -138,7 +144,11 @@ def main():
 
     logger.info(f'Listening to {args.proxy_address}')
 
-    rd.start()  # runs forever
+    try:
+        rd.start()  # runs forever
+    finally:
+        if cleanup_listener:
+            queue_listener.stop()
 
 
 if __name__ == '__main__':
