@@ -1,10 +1,10 @@
+import pytest
+from ophyd.sim import NumpySeqHandler, img
+
 from bluesky import RunEngine
 from bluesky.plans import count
 from event_model import RunRouter, UndefinedAssetSpecification
-from ophyd.sim import img, NumpySeqHandler
-import pytest
-
-from resource_health_check import validator_factory_raising, handler_registry
+from resource_health_check import handler_registry, validator_factory_raising
 
 
 def test():
