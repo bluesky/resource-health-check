@@ -1,3 +1,5 @@
+import subprocess
+
 import pytest
 from ophyd.sim import NumpySeqHandler, img
 
@@ -7,7 +9,7 @@ from event_model import RunRouter, UndefinedAssetSpecification
 from resource_health_check import handler_registry, validator_factory_raising
 
 
-def test():
+def test_basic_functionality():
     "A simple test demonstrating validation failure and success"
     handler_registry.clear()
     RE = RunEngine()
@@ -20,3 +22,9 @@ def test():
     handler_registry.update({'NPY_SEQ': NumpySeqHandler})
     # ...and now the validator should be satisfied.
     RE(count([img]))
+
+
+def test_cli_help():
+    "Test that the CLI starts up without errors."
+    # This raises CalledProcessError if it exits with a nonzero exit code.
+    subprocess.check_call(['python', 'resource_health_check.py', '-h'])
