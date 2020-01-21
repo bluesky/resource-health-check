@@ -136,7 +136,6 @@ def main():
     else:
         cleanup_listener = False
 
-
     rr = RunRouter([validator_factory])
     rd = RemoteDispatcher(args.proxy_address)
     rd.subscribe(rr)
