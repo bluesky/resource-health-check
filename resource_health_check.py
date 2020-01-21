@@ -7,12 +7,11 @@ from collections import deque
 from logging.handlers import SMTPHandler, QueueHandler, QueueListener
 import queue
 
-from bluesky.log import LogFormatter
 from bluesky.callbacks.zmq import RemoteDispatcher
-from event_model import (RunRouter, DocumentRouter, Filler,
-                         UndefinedAssetSpecification)
+from bluesky.log import LogFormatter
 from databroker.core import discover_handlers
-
+from event_model import (DocumentRouter, Filler, RunRouter,
+                         UndefinedAssetSpecification)
 
 logger = logging.getLogger('validator')
 
